@@ -5,7 +5,7 @@ const getAll = async (req, res) => {
   const result = await mongodb
     .getDatabse()
     .db("project1")
-    .collection("users")
+    .collection("contacts")
     .find();
   result.toArray().then((users) => {
     res.setHeader("Content-Type", "application/json");
@@ -18,7 +18,7 @@ const getSingle = async (req, res) => {
   const result = await mongodb
     .getDatabse()
     .db("project1")
-    .collection("users")
+    .collection("contacts")
     .find({ _id: userId });
   result.toArray().then((users) => {
     res.setHeader("Content-Type", "application/json");
