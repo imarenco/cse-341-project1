@@ -5,27 +5,20 @@ const mongodb = require("./data/database");
 
 const app = express();
 
-app.use(bodyParser.json());
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Z-Key"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  next();
-});
+app
+  .use(bodyParser.json())
+  .use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
 
-const port = process.env.PORT || 3000;
-
-app.use("/", require("./routes"));
+    next();
+  })
+  .use("/", require("./routes"));
 
 process.on("uncaughtException", (err, origin) => {
   console.log(process.stderr.fd, `Caught exception: ${err}`);
 });
+
+const port = process.env.PORT || 3000;
 
 mongodb.initDb((err) => {
   if (err) {
