@@ -5,8 +5,8 @@ const doc = {
     title: "Twitter Api",
     description: "Twitter Api",
   },
-  host: "localhost:3000",
-  schemes: ["http", "https"],
+  host: "https://cse-341-project1-t292.onrender.com",
+  schemes: ['https']
 };
 
 const outputFile = "./swagger.json";

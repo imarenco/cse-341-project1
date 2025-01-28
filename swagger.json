@@ -5,7 +5,7 @@
     "description": "Twitter Api",
     "version": "1.0.0"
   },
-  "host": "localhost:3000",
+  "host": "https://cse-341-project1-t292.onrender.com",
   "basePath": "/",
   "schemes": [
     "https"
