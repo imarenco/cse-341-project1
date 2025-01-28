@@ -1,12 +1,13 @@
+const { validationResult } = require("express-validator");
 const mongodb = require("../data/database");
 const ObjectId = require("mongodb").ObjectId;
 
 const getAll = async (req, res) => {
-  //#swagger.tags = ['Contacts']
+  //#swagger.tags = ['Comment']
   const result = await mongodb
     .getDatabse()
     .db("project1")
-    .collection("contacts")
+    .collection("comments")
     .find();
   result.toArray().then((users) => {
     res.setHeader("Content-Type", "application/json");
@@ -15,12 +16,17 @@ const getAll = async (req, res) => {
 };
 
 const getSingle = async (req, res) => {
-  //#swagger.tags = ['Contacts']
+  //#swagger.tags = ['Comment']
+
+  if (!ObjectId.isValid(req.params.id)) {
+    res.status(400).json("Must use a valid id");
+  }
+
   const userId = new ObjectId(req.params.id);
   const result = await mongodb
     .getDatabse()
     .db("project1")
-    .collection("contacts")
+    .collection("comments")
     .find({ _id: userId });
   result.toArray().then((users) => {
     res.setHeader("Content-Type", "application/json");
@@ -28,21 +34,27 @@ const getSingle = async (req, res) => {
   });
 };
 
-const createContact = async (req, res) => {
-  //#swagger.tags = ['Contacts']
-  const contact = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    favoriteColor: req.body.favoriteColor,
-    birthday: req.body.birthday,
+const createComment = async (req, res) => {
+  //#swagger.tags = ['Comment']
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const userId = new ObjectId(req.params.userId);
+  const postId = new ObjectId(req.params.postId);
+  const comment = {
+    userId: userId,
+    postId: postId,
+    text: req.body.text,
   };
 
   const response = await mongodb
     .getDatabse()
     .db("project1")
-    .collection("contacts")
-    .insertOne(contact);
+    .collection("comments")
+    .insertOne(comment);
   if (response.acknowledged) {
     res.status(204).send();
   } else {
@@ -52,22 +64,31 @@ const createContact = async (req, res) => {
   }
 };
 
-const updateContact = async (req, res) => {
-  //#swagger.tags = ['Contacts']
-  const userId = new ObjectId(req.params.id);
-  const contact = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    favoriteColor: req.body.favoriteColor,
-    birthday: req.body.birthday,
+const updateComment = async (req, res) => {
+  //#swagger.tags = ['Comment']
+
+  if (!ObjectId.isValid(req.params.id)) {
+    res.status(400).json("Must use a valid id");
+  }
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const userId = new ObjectId(req.params.userId);
+  const postId = new ObjectId(req.params.postId);
+  const comment = {
+    userId: userId,
+    postId: postId,
+    text: req.body.text,
   };
 
   const response = await mongodb
     .getDatabse()
     .db("project1")
-    .collection("contacts")
-    .replaceOne({ _id: userId }, contact);
+    .collection("comments")
+    .replaceOne({ _id: userId }, comment);
   if (response.modifiedCount > 0) {
     res.status(204).send();
   } else {
@@ -77,13 +98,18 @@ const updateContact = async (req, res) => {
   }
 };
 
-const deleteContact = async (req, res) => {
-  //#swagger.tags = ['Contacts']
+const deleteComment = async (req, res) => {
+  //#swagger.tags = ['Comment']
+
+  if (!ObjectId.isValid(req.params.id)) {
+    res.status(400).json("Must use a valid id");
+  }
+
   const userId = new ObjectId(req.params.id);
   const response = await mongodb
     .getDatabse()
     .db("project1")
-    .collection("contacts")
+    .collection("comments")
     .deleteOne({ _id: userId });
   if (response.deletedCount > 0) {
     res.status(204).send();
@@ -97,7 +123,7 @@ const deleteContact = async (req, res) => {
 module.exports = {
   getAll,
   getSingle,
-  createContact,
-  deleteContact,
-  updateContact,
+  createComment,
+  deleteComment,
+  updateComment,
 };
