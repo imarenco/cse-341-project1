@@ -5,7 +5,7 @@ const doc = {
     title: "Twitter Api",
     description: "Twitter Api",
   },
-  host: "https://cse-341-project1-t292.onrender.com",
+  host: "cse-341-project1-t292.onrender.com",
   schemes: ['https']
 };
 
