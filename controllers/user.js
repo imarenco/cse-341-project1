@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const mongodb = require("../data/database");
 const ObjectId = require("mongodb").ObjectId;
+const Auth = require("../helpers/auth");
 
 const getAll = async (req, res) => {
   //#swagger.tags = ['User']
@@ -127,10 +128,35 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const loginUser = async (req, res) => {
+  //#swagger.tags = ['User']
+
+  const result = await mongodb
+    .getDatabse()
+    .db("project1")
+    .collection("user")
+    .find({ username: req.body.username, password: req.body.password });
+  result.toArray().then((users) => {
+    const user = users[0];
+
+    if (user) {
+      console.log(user._id.toString());
+      res.setHeader("Content-Type", "application/json");
+      res.status(200).json({
+        ...user,
+        token: Auth.sign({ identifier: user._id.toString() }),
+      });
+    } else {
+      res.status(400).json({ message: "invalid username or password" });
+    }
+  });
+};
+
 module.exports = {
   getAll,
   getSingle,
   createUser,
+  loginUser,
   deleteUser,
   updateUser,
 };
